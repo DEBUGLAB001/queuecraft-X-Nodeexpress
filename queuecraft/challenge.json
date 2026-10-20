@@ -1,0 +1,21 @@
+{
+  "challenge_id": "queuecraft",
+  "runtime_config": {
+    "runtime_type": "node-express",
+    "install_command": "npm install",
+    "start_command": "node --watch server.js",
+    "test_command": "npm test",
+    "ports": [
+      {
+        "container_port": 3000,
+        "type": "preview"
+      }
+    ]
+  },
+  "bug_topics": [
+    "FIFO Queue",
+    "Array Indexing",
+    "Input Validation",
+    "Frontend State Synchronization"
+  ]
+}

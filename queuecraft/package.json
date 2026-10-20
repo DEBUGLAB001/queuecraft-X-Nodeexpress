@@ -1,0 +1,23 @@
+{
+  "name": "queuecraft",
+  "version": "1.0.0",
+  "description": "QueueCraft - Smart Queue Management System for DEBUG//LAB",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "keywords": [
+    "queue",
+    "management",
+    "express",
+    "debuglab"
+  ],
+  "author": "DEBUG//LAB",
+  "license": "ISC"
+}
