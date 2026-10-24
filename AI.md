@@ -1,7 +1,7 @@
 # QueueCraft
 
 ## Description
-QueueCraft is a real-time university queue management system built with Node.js and Express that coordinates student service counters for Library Assistance, IT Help Desk, and Student Administration. The application entry point is `server.js`, which binds to `0.0.0.0` on port `3000` (or `process.env.PORT`) and handles static assets and preview proxy routing (`/runtime/{runtime_id}/preview/`). Core domain logic resides in `services/queueService.js`, managing FIFO queue operations, token lifecycles, and dashboard state. Local persistence is handled by `services/storageService.js` through safe read/write operations against `data/queue-data.json`. Input validation is performed by `utils/validator.js`, while queue positions and wait times are computed by `utils/positionCalculator.js`. The single-page frontend in `public/` communicates with Express REST endpoints via relative paths.
+QueueCraft is a real-time university queue management system built with Node.js and Express that coordinates student service desks for Library Assistance, IT Help Desk, and Student Administration. The application entry point is `server.js`, which binds to `0.0.0.0` on port `3000` (or `process.env.PORT`) and handles static asset delivery and reverse-proxy routing. Core domain logic in `services/queueService.js` manages FIFO queue operations, token transitions, and dashboard metrics. File persistence is managed by `services/storageService.js` using `data/queue-data.json`. Request validation is handled in `utils/validator.js`, and 1-based queue position and wait-time estimations are calculated in `utils/positionCalculator.js`. The vanilla JavaScript client in `public/app.js` drives the frontend dashboard and communicates with the Express REST API.
 
 ## Repository Structure
 ```
@@ -29,25 +29,25 @@ QueueCraft is a real-time university queue management system built with Node.js 
 ## Bugs and Bug Locations
 
 1. Incorrect FIFO Queue Processing Order
-- Bug location: "services/queueService.js", within `callNextToken()` (line 83).
-- How to observe it: Ensure multiple tokens are waiting in queue (e.g. T-103, T-104, T-105) and invoke POST `/api/operator/call-next` or click "Call Next Token" in the operator console.
-- Failure: The newest token (T-105) is called instead of the oldest waiting token (T-103) because the operation selects `waitingTokens[waitingTokens.length - 1]` instead of `waitingTokens[0]`.
-- Expected: Queue operations must follow First-In, First-Out (FIFO) ordering by calling the earliest waiting token `waitingTokens[0]`.
+- Bug location: "services/queueService.js", within `callNextToken()` (line 82).
+- How to observe it: Queue multiple waiting tokens (e.g. T-101, T-102) and trigger POST `/api/operator/call-next` or click "Call Next Token" in the operator console.
+- Failure: The newest token is dequeued instead of the oldest because `waitingTokens[waitingTokens.length - 1]` is selected instead of `waitingTokens[0]`.
+- Expected: Queue operations must strictly adhere to FIFO ordering by selecting `waitingTokens[0]`.
 
 2. Zero-Indexed Queue Position Calculation
-- Bug location: "utils/positionCalculator.js", within `calculateQueuePosition()` (line 29).
-- How to observe it: Create a token when the waiting queue is empty or query GET `/api/tokens/:id/position` for the first waiting token.
+- Bug location: "utils/positionCalculator.js", within `calculateQueuePosition()` (line 28).
+- How to observe it: Query GET `/api/tokens/:id/position` for a waiting token or create a token when the queue is empty.
 - Failure: Returns the 0-based array index `index`, displaying queue position `#0` on the student ticket card instead of position `#1`.
-- Expected: Waiting positions must be 1-based, returning `index + 1` for eligible waiting tokens.
+- Expected: Queue positions must be 1-based, returning `index + 1` for waiting tokens.
 
 3. Incomplete Validation for Token Creation
-- Bug location: "utils/validator.js", within `validateTokenCreation()` (line 28).
-- How to observe it: Submit a POST request to `/api/tokens` with an empty string `""` or whitespace `"   "` as `studentName`.
-- Failure: Validation succeeds and creates an active token because the condition only checks `body.studentName === undefined`, allowing blank and whitespace-only strings.
-- Expected: Submissions with empty or whitespace-only student names must be rejected with HTTP 400 Bad Request without creating or saving a token.
+- Bug location: "utils/validator.js", within `validateTokenCreation()` (lines 23–25).
+- How to observe it: Submit POST `/api/tokens` with an empty string `""` or whitespace `"   "` as `studentName`.
+- Failure: The condition only checks `body.studentName === undefined`, allowing blank and whitespace-only strings to pass validation and generate active tokens.
+- Expected: Reject empty and whitespace-only student names with HTTP 400 Bad Request and descriptive validation errors without creating a token.
 
 4. Waiting Queue UI Desynchronization on Call Next
-- Bug location: "public/app.js", within `handleCallNext()` (line 318).
+- Bug location: "public/app.js", within `handleCallNext()` (lines 318–320).
 - How to observe it: Click "Call Next Token" in the operator console while students are listed in the Live Waiting Queue table.
-- Failure: The Now Serving panel updates, but `renderWaitingQueue(data.waitingTokens)` is omitted, leaving the called student rendered in the waiting queue table until a manual page reload.
-- Expected: Calling next token must immediately re-render and synchronize the visible waiting queue list with the server response by calling `renderWaitingQueue(data.waitingTokens)`.
+- Failure: The Now Serving card updates, but `renderWaitingQueue(data.waitingTokens)` is not called, leaving the called student rendered in the waiting queue table until a manual page reload.
+- Expected: Immediately update the waiting queue table by calling `renderWaitingQueue(data.waitingTokens)` after calling the next token.
