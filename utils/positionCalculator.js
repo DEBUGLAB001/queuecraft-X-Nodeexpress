@@ -5,11 +5,10 @@
 
 /**
  * Calculates a token's position in the waiting queue.
- * Waiting positions should be 1-based (position 1 is first in line).
  *
  * @param {Array<Object>} tokens - Complete list of tokens from persistent state
  * @param {string} tokenId - ID of the token whose position is being queried
- * @returns {number|null} 1-based position among waiting tokens, or null if token is not waiting
+ * @returns {number|null} Position among waiting tokens, or null if token is not waiting
  */
 export function calculateQueuePosition(tokens, tokenId) {
   if (!Array.isArray(tokens) || !tokenId) {
@@ -26,9 +25,6 @@ export function calculateQueuePosition(tokens, tokenId) {
     return null;
   }
 
-  // BUG 2 (Intentional): Returns 0-based index instead of 1-based position
-  // First student in line receives position 0 instead of 1.
-  // Correct implementation: return index + 1;
   return index;
 }
 

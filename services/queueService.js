@@ -63,7 +63,6 @@ export function createToken({ studentName, studentId, counter }) {
 
 /**
  * Calls the next eligible token from the waiting queue into service.
- * Follows FIFO ordering (oldest waiting token first).
  *
  * @returns {Object} Result containing called token or message if empty
  */
@@ -80,9 +79,6 @@ export function callNextToken() {
     };
   }
 
-  // BUG 1 (Intentional): LIFO ordering defect
-  // Next token is picked from the END of the waiting list instead of the FRONT (FIFO)
-  // Oldest waiting student should be served first: const nextToken = waitingTokens[0];
   const nextToken = waitingTokens[waitingTokens.length - 1];
 
   // If a student is currently being served, mark them completed first

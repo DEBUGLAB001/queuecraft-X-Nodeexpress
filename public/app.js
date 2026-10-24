@@ -317,12 +317,6 @@ async function handleCallNext() {
     // Update the stats bar
     renderStats(data.stats);
 
-    // BUG 4 (Intentional): Frontend state synchronization defect
-    // Does NOT synchronize the waiting queue table or count pill after calling next token!
-    // As a result, the student who was just called still appears in the waiting table
-    // until a full page reload occurs.
-    // Correct implementation:
-    // renderWaitingQueue(data.waitingTokens);
 
     if (myActiveTokenId) {
       await updateMyTokenPosition(myActiveTokenId);

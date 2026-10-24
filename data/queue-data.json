@@ -1,0 +1,44 @@
+{
+  "counters": [
+    {
+      "id": "library",
+      "name": "Library Assistance",
+      "description": "Book loans, research archives, and study carrels"
+    },
+    {
+      "id": "it-help",
+      "name": "IT Help Desk",
+      "description": "Campus Wi-Fi, student email, and software licensing"
+    },
+    {
+      "id": "admin",
+      "name": "Student Administration",
+      "description": "Transcripts, enrollment verification, and ID cards"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "TEST-1",
+      "tokenNumber": 901,
+      "studentName": "Student One",
+      "studentId": "STU-1001",
+      "counter": "library",
+      "status": "waiting",
+      "createdAt": "2026-10-20T10:00:00.000Z",
+      "servedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "TEST-2",
+      "tokenNumber": 902,
+      "studentName": "Student Two",
+      "studentId": "STU-1002",
+      "counter": "it-help",
+      "status": "serving",
+      "createdAt": "2026-10-20T10:05:00.000Z",
+      "servedAt": "2026-10-24T12:23:46.531Z",
+      "completedAt": null
+    }
+  ],
+  "nextTokenNumber": 106
+}
